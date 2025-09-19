@@ -1,0 +1,31 @@
+{
+  "name": "@fastysystem/backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "knex": "tsx ./node_modules/knex/bin/cli.js --knexfile src/knexfile.ts",
+    "make:migration": "npm run knex -- migrate:make -x ts",
+    "make:seed": "npm run knex -- seed:make -x ts",
+    "migrations": "npm run knex -- migrate:latest",
+    "rollback": "npm run knex -- migrate:rollback",
+    "seed": "npm run knex -- seed:run",
+    "seed:one": "npm run knex -- seed:run --specific"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.19.10",
+    "tsx": "^4.20.4",
+    "typescript": "^5.9.2"
+  }
+}
