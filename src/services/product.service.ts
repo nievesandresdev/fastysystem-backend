@@ -64,4 +64,26 @@ export class ProductService {
         throw new Error(e);        
     }
   }
+
+  async searchProduct(search: string) {
+    try{
+        const currExchange = await this.exchangeService.findActive();
+        const products = await this.repo.searchProduct(search);
+        if(products.length == 0) return products;
+        const exchange = parseFloat(currExchange.exchange).toFixed(2);
+        console.log('test exchange',exchange)
+        const dataMap = products.map(p=>{
+          const priceRExchange = parseFloat(p.priceRExchange).toFixed(2);
+            return {
+              ...p,
+              priceRExchange,
+              priceRLocal:  (priceRExchange * exchange).toFixed(2),
+            }          
+        })
+        return dataMap;
+    }catch(e: any){
+        console.log('error ProductService.searchProduct',e);
+        throw new Error('error ProductService.searchProduct');        
+    }
+  }
 }

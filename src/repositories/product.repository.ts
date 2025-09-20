@@ -141,4 +141,35 @@ export class ProductRepository {
       throw e;
     }
   }
+
+  async searchProduct(search: string) {
+  
+    try {
+      if(!search) return [];
+      return this.db<ProductWithUnit>(ProductRepository.TABLE)
+        .select(
+          ProductRepository.TABLE+'.id',
+          ProductRepository.TABLE+'.codigo',
+          ProductRepository.TABLE+'.name',
+          ProductRepository.TABLE+'.priceRExchange',
+          ProductRepository.TABLE+'.stock',
+          ProductRepository.TABLE+'.minStock',
+          ProductRepository.TABLE+'.active',
+          ProductRepository.TABLE+'.del',
+          'units.name as unitName',
+          'units.abbreviation as unitAbbreviation'
+        )
+        .join('measurement_units as units', ProductRepository.TABLE+'.typeStockId', 'units.id')
+        .where(ProductRepository.TABLE+'.del', 0)
+        .andWhere(ProductRepository.TABLE+'.active', 1)
+        .andWhere((sub) => {
+          sub.whereLike(ProductRepository.TABLE+'.name', `%${search}%`)
+            .orWhereLike(ProductRepository.TABLE+'.codigo', `%${search}%`)
+        })
+        .limit(8).offset(0);
+    } catch (e: any) {
+      console.error('Error ProductRepository.searchProduct', e);
+      throw e;
+    }
+  }
 }

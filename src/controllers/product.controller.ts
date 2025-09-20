@@ -106,5 +106,20 @@ export class ProductController {
     }
 
   };
+
+  searchProduct = async (req: Request, res: Response) => {
+    
+    try {
+
+      const products = await this.product.searchProduct(req.query.search);
+      return respond(res, EnumResponse.SUCCESS, products, 'Lista de productos');
+    } catch (e: any) {
+      console.log('error ProductController.searchProduct',e);
+      let msgError: string = 'error ProductController.searchProduct';
+      let statusError: string = EnumResponse.INTERNAL_SERVER_ERROR;
+      return respond(res, statusError, { error: serializeError(e) }, msgError);
+    }
+    
+  };
 }
 

@@ -28,7 +28,10 @@ const router = Router();
 
 router.post('/', controller.save);
 router.get('/', controller.getAll);
-router.get('/getMeasurementUnits', controller.getMeasurementUnits);
 router.delete('/delete/:id', controller.delete);
+router.get('/searchProduct', controller.searchProduct);
+
+router.get('/getMeasurementUnits', controller.getMeasurementUnits);
+
 
 export default router;
