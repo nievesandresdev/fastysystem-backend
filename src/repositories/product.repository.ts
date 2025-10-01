@@ -161,6 +161,7 @@ export class ProductRepository {
         )
         .join('measurement_units as units', ProductRepository.TABLE+'.typeStockId', 'units.id')
         .where(ProductRepository.TABLE+'.del', 0)
+        .where(ProductRepository.TABLE+'.stock','>', 0)
         .andWhere(ProductRepository.TABLE+'.active', 1)
         .andWhere((sub) => {
           sub.whereLike(ProductRepository.TABLE+'.name', `%${search}%`)
@@ -172,4 +173,19 @@ export class ProductRepository {
       throw e;
     }
   }
+
+  async decrementStock(productId: number, qty: number) {
+    try {
+      await this.db<Product>(ProductRepository.TABLE)
+        .where({ id: productId })
+        .decrement('stock', qty)
+        .update({ updated_at: this.db.fn.now() });
+
+      return this.getOne({ id: productId });
+    } catch (e: any) {
+      console.error('Error ProductRepository.decrementStock', e);
+      throw e;
+    }
+  }
+
 }

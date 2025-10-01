@@ -8,6 +8,7 @@ import authRoutes from '@routes/auth.routes';
 import productRoutes from '@routes/product.routes';
 import exchangeRoutes from '@routes/exchange.routes';
 import clientRoutes from '@routes/client.routes';
+import saleRoutes from '@routes/sale.routes';
 //
 import { authMiddleware } from '@middleware/auth.middleware';
 
@@ -51,6 +52,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/product', authMiddleware, productRoutes);
 app.use('/api/exchange', authMiddleware, exchangeRoutes);
 app.use('/api/client', authMiddleware, clientRoutes);
+app.use('/api/sale', authMiddleware, saleRoutes);
 //
 //
 // Manejo del puerto
