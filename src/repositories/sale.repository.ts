@@ -26,4 +26,15 @@ export class SaleRepository {
   async createChanges(changes: Omit<Change, "id">[]) {
     return this.db<Change>(SaleRepository.SALECHANGES_TABLE).insert(changes);
   }
+
+  async getSalesStats(startDate: string, endDate: string) {
+    // Convertir las fechas para incluir todo el día
+    const startDateTime = `${startDate} 00:00:00`;
+    const endDateTime = `${endDate} 23:59:59`;
+    
+    return this.db<Sale>(SaleRepository.TABLE)
+      .select('*')
+      .whereBetween('created_at', [startDateTime, endDateTime])
+      .orderBy('created_at', 'desc');
+  }
 }

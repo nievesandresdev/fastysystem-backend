@@ -1,8 +1,11 @@
 export interface Sale {
   id: number;
   clientId: number | null;
-  totalLocal: number;
-  totalExchange: number;
+  exchangeId: number;
+  totalLocal: string;
+  totalExchange: string;
+  totalProfitLocal: string;
+  totalProfitExchange: string;
   created_at: string;
   updated_at: string;
 }
@@ -12,15 +15,16 @@ export interface SaleItem {
   saleId: number;
   productId: number;
   qty: number;
-  priceLocal: number;
-  priceExchange: number;
+  priceLocal: string;
+  priceExchange: string;
+  priceCExchange: string;
 }
 
 export interface Payment {
   id: number;
   saleId: number;
   method: string;
-  amount: number;
+  amount: string;
   reference?: string;
   concept?: string;
 }
@@ -36,7 +40,8 @@ export interface Change {
 
 export interface SaveSaleRequest {
   clientId: number | null;
-  items: SaleItem[];
+  exchangeId: number;
+  itemslist: SaleItem[];
   payments: Record<string, { amount: string; reference?: string; concept?: string }>;
   change: Record<string, { amount: string; reference?: string; concept?: string }>;
   totalLocal: string;

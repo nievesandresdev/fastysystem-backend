@@ -68,4 +68,15 @@ export class ExchangeRepository {
     
   }
 
+  async findById(id: number) {
+    try {
+      return await this.db<Exchange>(ExchangeRepository.TABLE)
+        .where({ id })
+        .first();
+    } catch (e: any) {
+      console.error('Error ExchangeRepository.findById', e);
+      throw e;
+    }
+  }
+
 }

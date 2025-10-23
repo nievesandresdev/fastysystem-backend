@@ -152,6 +152,7 @@ export class ProductRepository {
           ProductRepository.TABLE+'.codigo',
           ProductRepository.TABLE+'.name',
           ProductRepository.TABLE+'.priceRExchange',
+          ProductRepository.TABLE+'.priceCExchange',
           ProductRepository.TABLE+'.stock',
           ProductRepository.TABLE+'.minStock',
           ProductRepository.TABLE+'.active',

@@ -15,4 +15,6 @@ const controller = new SaleController( service );
 const router = Router();
 
 router.post('/save', controller.save);
+router.get('/stats', controller.getStats);
+
 export default router;
