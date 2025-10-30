@@ -19,4 +19,76 @@ export class UserService {
     const { password: _omit, ...safe } = user as User & { password: string };
     return safe;
   }
+
+  async create(userData: {
+    name: string;
+    lastname?: string | null;
+    username: string;
+    email?: string | null;
+    password: string;
+    roles?: number[];
+  }) {
+    // Hash de la contraseña
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    
+    const user = await this.repo.create({
+      ...userData,
+      password: hashedPassword
+    });
+
+    // Crear relaciones con roles si se proporcionan
+    if (userData.roles && userData.roles.length > 0 && user.id) {
+      for (const roleId of userData.roles) {
+        await this.repo.assignRole(user.id, roleId);
+      }
+    }
+
+    // Omitir password del resultado
+    const { password: _omit, ...safeUser } = user as User & { password: string };
+    return safeUser;
+  }
+
+  async findByUsername(username: string) {
+    return await this.repo.findByUsername(username);
+  }
+
+  async findByEmail(email: string) {
+    return await this.repo.findByEmail(email);
+  }
+
+  async findAllWithRoles() {
+    return await this.repo.findAllWithRoles();
+  }
+
+
+  async update(id: number, userData: {
+    name: string;
+    lastname?: string | null;
+    username: string;
+    email?: string | null;
+    roles?: number[];
+  }) {
+    // Actualizar datos del usuario
+    const user = await this.repo.update(id, {
+      name: userData.name,
+      lastname: userData.lastname,
+      username: userData.username,
+      email: userData.email
+    });
+
+    // Actualizar roles si se proporcionan
+    if (userData.roles && userData.roles.length > 0) {
+      // Eliminar roles actuales
+      await this.repo.removeUserRoles(id);
+      
+      // Asignar nuevos roles
+      for (const roleId of userData.roles) {
+        await this.repo.assignRole(id, roleId);
+      }
+    }
+
+    // Omitir password del resultado
+    const { password: _omit, ...safeUser } = user as User & { password: string };
+    return safeUser;
+  }
 }

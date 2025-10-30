@@ -8,7 +8,9 @@ import { ExchangeRepository } from '@repositories/exchange.repository';
 import { CoinController } from '@controllers/coin.controller';
 import { CoinService } from '@services/coin.service';
 import { CoinRepository } from '@repositories/coin.repository';
-
+//middleware
+import { authMiddleware } from '@middleware/auth.middleware';
+import { requireAdmin } from '@middleware/role.middleware';
 
 const repo = new ExchangeRepository(db);
 const service = new ExchangeService(repo);
@@ -23,8 +25,8 @@ const coinController = new CoinController(coinService);
 
 const router = Router();
 
-router.get('/getCoins', coinController.getAll);
-router.post('/create', controller.create);
-router.get('/findActive', controller.findActive);
+router.get('/getCoins', authMiddleware, coinController.getAll);
+router.post('/create', authMiddleware, requireAdmin, controller.create);
+router.get('/findActive', authMiddleware, controller.findActive);
 
 export default router;

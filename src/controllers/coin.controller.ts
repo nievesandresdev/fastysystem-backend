@@ -16,7 +16,7 @@ export class CoinController {
     } catch (e: any) {
       console.log('error CoinController.getAll',e);
       let msgError: string = 'error CoinController.getAll';
-      let statusError: string = EnumResponse.INTERNAL_SERVER_ERROR;
+      let statusError: EnumResponse = EnumResponse.INTERNAL_SERVER_ERROR;
       return respond(res, statusError, { error: serializeError(e) }, msgError);
     }
     

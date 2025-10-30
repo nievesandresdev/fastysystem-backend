@@ -13,7 +13,7 @@ export class AuthController {
   login = async (req: Request, res: Response) => {
     const { username, password } = req.body ?? {};
     if (!username || !password) {
-      return res.status(EnumResponse.BAD_REQUEST).json({ message: 'username/password requeridos' });
+      return res.status(400).json({ message: 'username/password requeridos' });
     }
 
     try {
@@ -27,7 +27,7 @@ export class AuthController {
     } catch (e: any) {
       console.log('error AuthController.login',e);
       let msgError: string = 'Error interno';
-      let statusError: string = EnumResponse.INTERNAL_SERVER_ERROR;
+      let statusError: EnumResponse = EnumResponse.INTERNAL_SERVER_ERROR;
       if (e?.message === AuthError.CREDENTIALS_INVALID.key) {
         statusError = EnumResponse.UNAUTHORIZED;
         msgError = AuthError.CREDENTIALS_INVALID.msg;
@@ -41,4 +41,3 @@ export class AuthController {
     }
   };
 }
-

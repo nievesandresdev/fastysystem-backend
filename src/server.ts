@@ -10,6 +10,8 @@ import exchangeRoutes from '@routes/exchange.routes';
 import clientRoutes from '@routes/client.routes';
 import saleRoutes from '@routes/sale.routes';
 import expenseRoutes from '@routes/expense.routes';
+import roleRoutes from '@routes/role.routes';
+import userRoutes from '@routes/user.routes';
 //
 import { authMiddleware } from '@middleware/auth.middleware';
 
@@ -42,7 +44,7 @@ app.use(express.static(path.join(__dirname, '../../dist'))); // Servir archivos 
 app.use(cors({
   origin: process.env.VITE_UI_URL,
   methods: ['GET','POST','OPTIONS','PUT','DELETE'],
-  allowedHeaders: ['Content-Type','Authorization']
+  allowedHeaders: ['Content-Type','Authorization','X-User-Roles']
 }));
 //
 //
@@ -55,6 +57,8 @@ app.use('/api/exchange', authMiddleware, exchangeRoutes);
 app.use('/api/client', authMiddleware, clientRoutes);
 app.use('/api/sale', authMiddleware, saleRoutes);
 app.use('/api/expense', authMiddleware, expenseRoutes);
+app.use('/api/role', authMiddleware, roleRoutes);
+app.use('/api/user', authMiddleware, userRoutes);
 //
 //
 // Manejo del puerto
@@ -63,7 +67,7 @@ app.use('/api/expense', authMiddleware, expenseRoutes);
 const PORT = process.env.BACKEND_PORT || 3000;
 const server = app.listen(PORT, () => {
   console.log(`Backend corriendo en el puerto ${PORT}`);
-}).on('error', (err) => {
+}).on('error', (err: any) => {
   console.log(`⚠️ error, ${err}`);
   if (err.code === 'EADDRINUSE') {
     const newPort = Number(PORT) + 1;

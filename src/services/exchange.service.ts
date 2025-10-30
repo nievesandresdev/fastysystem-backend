@@ -5,7 +5,7 @@ import { ExchangeRepository } from '@repositories/exchange.repository';
 export class ExchangeService {
   constructor(private repo: ExchangeRepository) {}
 
-  async create(ExchangeData: Omit<Product, 'id' | 'created_at' | 'updated_at'>) {
+  async create(ExchangeData: Omit<Exchange, 'id' | 'created_at' | 'updated_at'>) {
     try{
         return this.repo.create({...ExchangeData, active: true});
     }catch(e: any){
@@ -14,9 +14,9 @@ export class ExchangeService {
     }
   }
 
-  async replace(idCurrentExchange: number, ExchangeData: Omit<Product, 'id' | 'created_at' | 'updated_at'>) {
+  async replace(idCurrentExchange: number, ExchangeData: Omit<Exchange, 'id' | 'created_at' | 'updated_at'>) {
     try{
-        return this.repo.replace(idCurrentExchange, {exchange : ExchangeData.exchange, active: true});
+        return this.repo.replace(idCurrentExchange, {exchange : ExchangeData.exchange, active: true, coinId: ExchangeData.coinId});
     }catch(e: any){
         console.log('error ExchangeService.replace',e);
         throw new Error(e);        

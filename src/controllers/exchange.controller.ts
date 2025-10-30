@@ -17,13 +17,20 @@ export class ExchangeController {
       //
       if(errors.length) return respond(res, EnumResponse.BAD_REQUEST, { error: errors[0] }, 'Error de validacion');
       //
-      const msgReq = "Tasa de cambio creada!";
-      const create = await this.exchange.create(request);
-      return respond(res, EnumResponse.SUCCESS, create, msgReq);
+      const findActive = await this.exchange.findActive();
+      let msgReq = "Tasa de cambio creada!";
+      let response;
+      if(!findActive || !findActive.id){
+        response = await this.exchange.create(request);
+      }else{
+        msgReq = "Tasa de cambio actualizada!";
+        response = await this.exchange.replace(findActive.id, request);
+      }
+      return respond(res, EnumResponse.SUCCESS, response, msgReq);
     } catch (e: any) {
       console.log('error ExchangeController.create',e);
       let msgError: string = 'error ExchangeController.create';
-      let statusError: string = EnumResponse.INTERNAL_SERVER_ERROR;
+      let statusError: EnumResponse = EnumResponse.INTERNAL_SERVER_ERROR;
       return respond(res, statusError, { error: serializeError(e) }, msgError);
     }
 
@@ -37,7 +44,7 @@ export class ExchangeController {
     } catch (e: any) {
       console.log('error ExchangeController.findActive',e);
       let msgError: string = 'error ExchangeController.findActive';
-      let statusError: string = EnumResponse.INTERNAL_SERVER_ERROR;
+      let statusError: EnumResponse = EnumResponse.INTERNAL_SERVER_ERROR;
       return respond(res, statusError, { error: serializeError(e) }, msgError);
     }
     
