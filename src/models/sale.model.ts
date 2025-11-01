@@ -1,7 +1,9 @@
 export interface Sale {
   id: number;
+  userId: number;
   clientId: number | null;
   exchangeId: number;
+  closureId: number | null;
   totalLocal: string;
   totalExchange: string;
   totalProfitLocal: string;
@@ -39,6 +41,7 @@ export interface Change {
 }
 
 export interface SaveSaleRequest {
+  userId: number;
   clientId: number | null;
   exchangeId: number;
   itemslist: SaleItem[];

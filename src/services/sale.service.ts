@@ -31,6 +31,7 @@ export class SaleService {
       }
       
       const sale = await saleRepo.createSale({
+        userId: req.userId,
         clientId: req.clientId,
         exchangeId: req.exchangeId,
         totalLocal: req.totalLocal,

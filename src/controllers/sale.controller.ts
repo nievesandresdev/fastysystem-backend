@@ -3,13 +3,25 @@ import { SaleService } from "@services/sale.service";
 import { respond } from "@common/response";
 import { EnumResponse } from "@common/EnumResponse";
 import { serializeError } from "@common/helpers";
+import { AuthRequest } from "@middleware/auth.middleware";
 
 export class SaleController {
   constructor(private service: SaleService) {}
 
-  save = async (req: Request, res: Response) => {
+  save = async (req: AuthRequest, res: Response) => {
     try {
-      const sale = await this.service.save(req.body);
+      // Obtener el userId del token de autenticación
+      const userId = req.user?.sub;
+      if (!userId) {
+        return respond(
+          res,
+          EnumResponse.UNAUTHORIZED,
+          { error: 'Usuario no autenticado' },
+          "Error de autenticación"
+        );
+      }
+
+      const sale = await this.service.save({ ...req.body, userId: Number(userId) });
       return respond(res, EnumResponse.SUCCESS, sale, "Venta guardada!");
     } catch (e: any) {
       console.error("error SaleController.save", e);
