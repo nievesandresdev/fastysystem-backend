@@ -1,12 +1,17 @@
 // src/models/closure.model.ts
 
-export interface PaymentBreakdown {
+export interface PaymentMethodBreakdown {
   debit: number;
   cash: number;
-  foreignCurrency: number;
-  bankTransfer: number;
+  exchange: number;
+  transfer: number;
   other: number;
-  extraBalance: number; // positivo o negativo según el cambio
+}
+
+export interface PaymentBreakdown {
+  payments: PaymentMethodBreakdown; // Desglose de pagos recibidos (sale_payments)
+  changes: PaymentMethodBreakdown; // Desglose de cambios devueltos (sale_changes)
+  extraBalance: number;
 }
 
 export interface Closure {
@@ -14,6 +19,7 @@ export interface Closure {
   totalLocal: string;
   totalExchange: string;
   totalProductsSold: number;
+  openAt: string;
   closedAt: string;
   paymentBreakdown: PaymentBreakdown;
   created_at: string;

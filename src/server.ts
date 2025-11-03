@@ -12,6 +12,7 @@ import saleRoutes from '@routes/sale.routes';
 import expenseRoutes from '@routes/expense.routes';
 import roleRoutes from '@routes/role.routes';
 import userRoutes from '@routes/user.routes';
+import closureRoutes from '@routes/closure.routes';
 //
 import { authMiddleware } from '@middleware/auth.middleware';
 
@@ -59,6 +60,7 @@ app.use('/api/sale', authMiddleware, saleRoutes);
 app.use('/api/expense', authMiddleware, expenseRoutes);
 app.use('/api/role', authMiddleware, roleRoutes);
 app.use('/api/user', authMiddleware, userRoutes);
+app.use('/api/closure', authMiddleware, closureRoutes);
 //
 //
 // Manejo del puerto
