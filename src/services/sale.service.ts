@@ -2,6 +2,7 @@ import type { SaveSaleRequest } from '@models/sale.model';
 import { SaleRepository } from "@repositories/sale.repository";
 import { ProductRepository } from "@repositories/product.repository";
 import { ExchangeRepository } from "@repositories/exchange.repository";
+import { ExpenseRepository } from "@repositories/expense.repository";
 
 export class SaleService {
   constructor(private repo: SaleRepository) {}
@@ -108,5 +109,53 @@ export class SaleService {
         salesCount: sales.length
       }
     };
+  }
+
+  async getMonthlyReport(startDate: string, endDate: string) {
+    // Obtener estadísticas mensuales de ventas
+    const salesMonthly = await this.repo.getMonthlyStats(startDate, endDate);
+    
+    // Obtener gastos mensuales
+    const expenseRepo = new ExpenseRepository(this.repo["db"]);
+    const expensesMonthly = await expenseRepo.getMonthlyExpenses(startDate, endDate);
+
+    // Crear un mapa de meses para combinar datos
+    const monthMap = new Map<string, { month: string; totalProducts: number; totalProfit: number; totalExpenses: number }>();
+
+    // Procesar datos de ventas
+    salesMonthly.forEach(item => {
+      monthMap.set(item.month, {
+        month: item.month,
+        totalProducts: item.totalProducts,
+        totalProfit: item.totalProfit,
+        totalExpenses: 0
+      });
+    });
+
+    // Procesar datos de gastos
+    expensesMonthly.forEach(item => {
+      const existing = monthMap.get(item.month);
+      if (existing) {
+        existing.totalExpenses = item.amount;
+      } else {
+        monthMap.set(item.month, {
+          month: item.month,
+          totalProducts: 0,
+          totalProfit: 0,
+          totalExpenses: item.amount
+        });
+      }
+    });
+
+    // Convertir a array y ordenar por mes
+    return Array.from(monthMap.values()).sort((a, b) => a.month.localeCompare(b.month));
+  }
+
+  async getCurrentPeriodStats() {
+    return this.repo.getCurrentPeriodStats();
+  }
+
+  async getTopProductsAndLowStock() {
+    return this.repo.getTopProductsAndLowStock();
   }
 }

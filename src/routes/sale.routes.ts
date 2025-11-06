@@ -17,5 +17,8 @@ const router = Router();
 
 router.post('/save', authMiddleware, controller.save);
 router.get('/stats', controller.getStats);
+router.get('/monthly-report', controller.getMonthlyReport);
+router.get('/current-period', controller.getCurrentPeriodStats);
+router.get('/top-products-low-stock', controller.getTopProductsAndLowStock);
 
 export default router;

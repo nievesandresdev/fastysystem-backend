@@ -59,4 +59,60 @@ export class SaleController {
       );
     }
   };
+
+  getMonthlyReport = async (req: Request, res: Response) => {
+    try {
+      const { startDate, endDate } = req.query;
+      
+      if (!startDate || !endDate) {
+        return respond(
+          res,
+          EnumResponse.BAD_REQUEST,
+          { error: 'startDate and endDate are required' },
+          'Fechas de inicio y fin son requeridas'
+        );
+      }
+
+      const report = await this.service.getMonthlyReport(startDate as string, endDate as string);
+      return respond(res, EnumResponse.SUCCESS, report, "Reporte mensual obtenido");
+    } catch (e: any) {
+      console.error("error SaleController.getMonthlyReport", e);
+      return respond(
+        res,
+        EnumResponse.INTERNAL_SERVER_ERROR,
+        { error: serializeError(e) },
+        "Error al obtener reporte mensual"
+      );
+    }
+  };
+
+  getCurrentPeriodStats = async (req: Request, res: Response) => {
+    try {
+      const stats = await this.service.getCurrentPeriodStats();
+      return respond(res, EnumResponse.SUCCESS, stats, "Estadísticas del período actual obtenidas");
+    } catch (e: any) {
+      console.error("error SaleController.getCurrentPeriodStats", e);
+      return respond(
+        res,
+        EnumResponse.INTERNAL_SERVER_ERROR,
+        { error: serializeError(e) },
+        "Error al obtener estadísticas del período actual"
+      );
+    }
+  };
+
+  getTopProductsAndLowStock = async (req: Request, res: Response) => {
+    try {
+      const data = await this.service.getTopProductsAndLowStock();
+      return respond(res, EnumResponse.SUCCESS, data, "Productos top y con stock bajo obtenidos");
+    } catch (e: any) {
+      console.error("error SaleController.getTopProductsAndLowStock", e);
+      return respond(
+        res,
+        EnumResponse.INTERNAL_SERVER_ERROR,
+        { error: serializeError(e) },
+        "Error al obtener productos top y con stock bajo"
+      );
+    }
+  };
 }

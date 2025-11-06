@@ -200,4 +200,69 @@ export class ExpenseRepository {
         }
     }
 
+    async getMonthlyExpenses(startDate: string, endDate: string) {
+        try {
+            // Para gastos mensuales, necesitamos calcular cuánto se gastó en cada mes
+            // Esto incluye gastos fijos (que se aplican todos los meses) y gastos temporales
+            const expenses = await this.db<Expense>(ExpenseRepository.TABLE)
+                .select('*')
+                .where('status', 'with-effect')
+                .where(function() {
+                    // Gastos que tienen solapamiento con el rango de fechas
+                    this.where(function() {
+                        this.whereNotNull('endDate')
+                            .andWhere('startDate', '<=', endDate)
+                            .andWhere('endDate', '>=', startDate);
+                    })
+                    .orWhere(function() {
+                        this.whereNull('endDate')
+                            .andWhere('startDate', '<=', endDate);
+                    });
+                });
+
+            // Crear un mapa para almacenar gastos por mes
+            const monthlyExpenses = new Map<string, number>();
+            
+            // Generar todos los meses en el rango
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const current = new Date(start);
+            
+            while (current <= end) {
+                const monthKey = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+                monthlyExpenses.set(monthKey, 0);
+                
+                // Mover al siguiente mes
+                current.setMonth(current.getMonth() + 1);
+            }
+
+            // Calcular gastos por mes
+            expenses.forEach(expense => {
+                const expenseStart = new Date(expense.startDate);
+                const expenseEnd = expense.endDate ? new Date(expense.endDate) : end;
+                const expenseAmount = parseFloat(expense.amount) || 0;
+                
+                const current = new Date(Math.max(expenseStart, start));
+                const finalEnd = new Date(Math.min(expenseEnd, end));
+                
+                while (current <= finalEnd) {
+                    const monthKey = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+                    const currentAmount = monthlyExpenses.get(monthKey) || 0;
+                    monthlyExpenses.set(monthKey, currentAmount + expenseAmount);
+                    
+                    // Mover al siguiente mes
+                    current.setMonth(current.getMonth() + 1);
+                }
+            });
+
+            // Convertir el mapa a array ordenado
+            return Array.from(monthlyExpenses.entries())
+                .map(([month, amount]) => ({ month, amount }))
+                .sort((a, b) => a.month.localeCompare(b.month));
+        } catch (e: any) {
+            console.error('Error ExpenseRepository.getMonthlyExpenses', e);
+            throw e;
+        }
+    }
+
 }
