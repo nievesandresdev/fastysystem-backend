@@ -1,21 +1,53 @@
 // src/middleware/role.middleware.ts
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { respond } from '@common/response';
 import { EnumResponse } from '@common/EnumResponse';
+import { db } from '@db';
+import { RoleRepository } from '@repositories/role.repository';
+import { RoleService } from '@services/role.service';
+import { AuthRequest } from './auth.middleware';
+
+const roleRepository = new RoleRepository(db);
+const roleService = new RoleService(roleRepository);
 
 export function requireRoles(allowedRoles: string[]) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
-      // Obtener roles del header
-      const userRolesHeader = req.headers['x-user-roles'] as string;
-      
-      if (!userRolesHeader) {
-        return respond(res, EnumResponse.FORBIDDEN, { 
-          error: 'Roles de usuario no encontrados' 
-        }, 'Acceso denegado');
+      const userIdHeader = req.headers['x-user-id'] as string | undefined;
+      const tokenUserId = req.user?.sub as string | number | undefined;
+      const rawUserId = userIdHeader ?? tokenUserId;
+
+      if (!rawUserId) {
+        return respond(
+          res,
+          EnumResponse.UNAUTHORIZED,
+          { error: 'Usuario no autenticado' },
+          'Acceso denegado'
+        );
       }
 
-      const userRoles = userRolesHeader.split(',').map(role => role.trim());
+      const userId = Number(rawUserId);
+
+      if (!Number.isInteger(userId)) {
+        return respond(
+          res,
+          EnumResponse.BAD_REQUEST,
+          { error: 'Identificador de usuario inválido' },
+          'Acceso denegado'
+        );
+      }
+
+      const userRoles = await roleService.getRoleNamesByUserId(userId);
+
+      if (!userRoles || userRoles.length === 0) {
+        return respond(
+          res,
+          EnumResponse.FORBIDDEN,
+          { error: 'Roles de usuario no encontrados' },
+          'Acceso denegado'
+        );
+      }
+
       const hasRequiredRole = allowedRoles.some(role => userRoles.includes(role));
 
       if (!hasRequiredRole) {
@@ -24,9 +56,14 @@ export function requireRoles(allowedRoles: string[]) {
         }, 'Acceso denegado por permisos');
       }
 
-      next();
+      return next();
     } catch (error: any) {
-      return respond(res, EnumResponse.INTERNAL_SERVER_ERROR, { error: 'Error al verificar permisos' }, 'Error interno');
+      return respond(
+        res,
+        EnumResponse.INTERNAL_SERVER_ERROR,
+        { error: 'Error al verificar permisos' },
+        'Error interno'
+      );
     }
   };
 }

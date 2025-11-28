@@ -8,4 +8,8 @@ export class RoleService {
   async getAll(): Promise<Role[]> {
     return await this.repo.findAll();
   }
+
+  async getRoleNamesByUserId(userId: number): Promise<string[]> {
+    return await this.repo.findNamesByUserId(userId);
+  }
 }

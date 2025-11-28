@@ -15,4 +15,18 @@ export class RoleRepository {
       throw e;
     }
   }
+
+  async findNamesByUserId(userId: number): Promise<string[]> {
+    try {
+      const roles = await this.db('role_user')
+        .join('roles', 'role_user.role_id', 'roles.id')
+        .where('role_user.user_id', userId)
+        .select('roles.name');
+
+      return roles.map((role: { name: string }) => role.name);
+    } catch (e: any) {
+      console.error('error RoleRepository.findNamesByUserId', e);
+      throw e;
+    }
+  }
 }

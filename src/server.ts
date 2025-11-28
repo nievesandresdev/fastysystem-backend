@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, '../../dist'))); // Servir archivos 
 app.use(cors({
   origin: process.env.VITE_UI_URL,
   methods: ['GET','POST','OPTIONS','PUT','DELETE'],
-  allowedHeaders: ['Content-Type','Authorization','X-User-Roles']
+  allowedHeaders: ['Content-Type','Authorization','X-User-Roles','X-User-Id']
 }));
 //
 //

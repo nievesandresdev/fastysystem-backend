@@ -10,7 +10,8 @@ import { MeasurementUnitRepository } from '@repositories/measurementUnit.reposit
 //exchange
 import { ExchangeService } from '@services/exchange.service';
 import { ExchangeRepository } from '@repositories/exchange.repository';
-
+//middleware
+import { requireAdmin } from '@middleware/role.middleware';
 //
 const measurementUnitRepo = new MeasurementUnitRepository(db);
 const measurementUnitService = new MeasurementUnitService(measurementUnitRepo);
@@ -26,9 +27,9 @@ const controller = new ProductController( service, measurementUnitService );
 
 const router = Router();
 
-router.post('/', controller.save);
+router.post('/', requireAdmin, controller.save);
 router.get('/', controller.getAll);
-router.delete('/delete/:id', controller.delete);
+router.delete('/delete/:id', requireAdmin, controller.delete);
 router.get('/searchProduct', controller.searchProduct);
 
 router.get('/getMeasurementUnits', controller.getMeasurementUnits);
